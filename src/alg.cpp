@@ -6,9 +6,9 @@ namespace mylib {
 std::uint64_t sum_of_squares(std::span<const std::uint32_t> xs) noexcept {
     // Portable scalar fallback; compilers will auto-vectorize for -O3.
     // (Kept simple to focus on template structure.)
-    unsigned long long acc = 0ULL;
-    for (std::uint32_t v : xs) {
-        acc += static_cast<unsigned long long>(v) * static_cast<unsigned long long>(v);
+    std::uint64_t acc = 0;
+    for (const auto v : xs) {
+        acc += static_cast<std::uint64_t>(v) * static_cast<std::uint64_t>(v);
     }
     return acc;
 }
