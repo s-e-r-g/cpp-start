@@ -1,0 +1,136 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 21, "patch": 0 },
+
+  "configurePresets": [
+    {
+      "name": "linux-gcc-debug",
+      "displayName": "Linux GCC Debug (+tests, +bench, perf)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/gcc-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++",
+        "BUILD_TESTING": "ON",
+        "BUILD_BENCHMARKS": "ON",
+        "ENABLE_LINUX_PERF": "ON"
+      }
+    },
+    {
+      "name": "linux-gcc-release",
+      "displayName": "Linux GCC Release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/gcc-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++",
+        "BUILD_TESTING": "ON",
+        "BUILD_BENCHMARKS": "ON",
+        "ENABLE_LINUX_PERF": "ON"
+      }
+    },
+    {
+      "name": "linux-clang-asan",
+      "displayName": "Linux Clang Debug (ASan/UBSan)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/clang-asan",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "BUILD_TESTING": "ON",
+        "BUILD_BENCHMARKS": "ON",
+        "ENABLE_LINUX_PERF": "ON",
+        "CMAKE_CXX_FLAGS": "-fno-omit-frame-pointer",
+        "CMAKE_EXE_LINKER_FLAGS": ""
+      },
+      "environment": {
+        "ASAN_OPTIONS": "detect_leaks=1"
+      }
+    },
+    {
+      "name": "linux-clang-release",
+      "displayName": "Linux Clang Release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/clang-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "BUILD_TESTING": "ON",
+        "BUILD_BENCHMARKS": "ON",
+        "ENABLE_LINUX_PERF": "ON"
+      }
+    },
+    {
+      "name": "linux-gcc-coverage",
+      "displayName": "Linux GCC Coverage (Debug + gcov)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/gcc-coverage",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++",
+        "BUILD_TESTING": "ON",
+        "BUILD_BENCHMARKS": "OFF",
+        "ENABLE_LINUX_PERF": "OFF",
+        "CMAKE_C_FLAGS": "--coverage",
+        "CMAKE_CXX_FLAGS": "--coverage",
+        "CMAKE_EXE_LINKER_FLAGS": "--coverage"
+      }
+    },
+    {
+      "name": "windows-msvc",
+      "displayName": "Windows MSVC (x64) Multi-Config",
+      "generator": "Visual Studio 17 2022",
+      "binaryDir": "${sourceDir}/build/msvc",
+      "architecture": { "value": "x64", "strategy": "external" },
+      "cacheVariables": {
+        "BUILD_TESTING": "ON",
+        "BUILD_BENCHMARKS": "ON",
+        "ENABLE_LINUX_PERF": "OFF"
+      }
+    }
+  ],
+
+  "buildPresets": [
+    { "name": "gcc-debug",      "configurePreset": "linux-gcc-debug",     "configuration": "Debug",   "jobs": 8 },
+    { "name": "gcc-release",    "configurePreset": "linux-gcc-release",   "configuration": "Release", "jobs": 8 },
+    { "name": "clang-asan",     "configurePreset": "linux-clang-asan",    "configuration": "Debug",   "jobs": 8 },
+    { "name": "clang-release",  "configurePreset": "linux-clang-release", "configuration": "Release", "jobs": 8 },
+    { "name": "gcc-coverage",   "configurePreset": "linux-gcc-coverage",  "configuration": "Debug",   "jobs": 8 },
+    { "name": "msvc-debug",     "configurePreset": "windows-msvc",        "configuration": "Debug" },
+    { "name": "msvc-release",   "configurePreset": "windows-msvc",        "configuration": "Release" }
+  ],
+
+  "testPresets": [
+    {
+      "name": "test-gcc-debug",
+      "configurePreset": "linux-gcc-debug",
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "ignore" }
+    },
+    {
+      "name": "test-gcc-release",
+      "configurePreset": "linux-gcc-release",
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "ignore" }
+    },
+    {
+      "name": "test-clang-asan",
+      "configurePreset": "linux-clang-asan",
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "ignore" },
+      "environment": { "ASAN_OPTIONS": "detect_leaks=1" }
+    },
+    {
+      "name": "test-msvc-debug",
+      "configurePreset": "windows-msvc",
+      "configuration": "Debug",
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "ignore" }
+    }
+  ]
+}
