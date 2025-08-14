@@ -41,24 +41,24 @@ ctest --preset test-gcc-debug --output-on-failure
 ### Release build
 
 ```bash
-cmake --preset linux-gcc-release
-cmake --build --preset linux-gcc-release -j
+cmake --preset gcc-release
+cmake --build --preset gcc-release
 ```
 
 ### ASan/UBSan (Clang)
 
 ```bash
-cmake --preset linux-clang-asan
-cmake --build --preset linux-clang-asan -j
-ASAN_OPTIONS=detect_leaks=1 ./build/linux-clang-asan/app
+cmake --preset clang-asan
+cmake --build --preset clang-asan
+ASAN_OPTIONS=detect_leaks=1 ./build/clang-asan/app
 ```
 
 ### Windows (MSVC)
 
 ```powershell
-cmake --preset windows-msvc
-cmake --build --preset windows-msvc --config Debug
-ctest --preset test-msvc --output-on-failure
+cmake --preset msvc
+cmake --build --preset msvc-debug
+ctest --preset test-msvc-debug --output-on-failure
 ```
 
 ---

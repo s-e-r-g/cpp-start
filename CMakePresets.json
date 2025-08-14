@@ -4,8 +4,8 @@
 
   "configurePresets": [
     {
-      "name": "linux-gcc-debug",
-      "displayName": "Linux GCC Debug (+tests, +bench, perf)",
+      "name": "gcc-debug",
+      "displayName": "GCC Debug (+tests, +bench, perf)",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/gcc-debug",
       "cacheVariables": {
@@ -18,8 +18,8 @@
       }
     },
     {
-      "name": "linux-gcc-release",
-      "displayName": "Linux GCC Release",
+      "name": "gcc-release",
+      "displayName": "GCC Release",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/gcc-release",
       "cacheVariables": {
@@ -32,8 +32,8 @@
       }
     },
     {
-      "name": "linux-clang-asan",
-      "displayName": "Linux Clang Debug (ASan/UBSan)",
+      "name": "clang-asan",
+      "displayName": "Clang Debug (ASan/UBSan)",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/clang-asan",
       "cacheVariables": {
@@ -51,8 +51,8 @@
       }
     },
     {
-      "name": "linux-clang-release",
-      "displayName": "Linux Clang Release",
+      "name": "clang-release",
+      "displayName": "Clang Release",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/clang-release",
       "cacheVariables": {
@@ -65,8 +65,8 @@
       }
     },
     {
-      "name": "linux-gcc-coverage",
-      "displayName": "Linux GCC Coverage (Debug + gcov)",
+      "name": "gcc-coverage",
+      "displayName": "GCC Coverage (Debug + gcov)",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/gcc-coverage",
       "cacheVariables": {
@@ -82,7 +82,7 @@
       }
     },
     {
-      "name": "windows-msvc",
+      "name": "msvc",
       "displayName": "Windows MSVC (x64) Multi-Config",
       "generator": "Visual Studio 17 2022",
       "binaryDir": "${sourceDir}/build/msvc",
@@ -96,38 +96,38 @@
   ],
 
   "buildPresets": [
-    { "name": "gcc-debug",      "configurePreset": "linux-gcc-debug",     "configuration": "Debug"},
-    { "name": "gcc-release",    "configurePreset": "linux-gcc-release",   "configuration": "Release"},
-    { "name": "clang-asan",     "configurePreset": "linux-clang-asan",    "configuration": "Debug"},
-    { "name": "clang-release",  "configurePreset": "linux-clang-release", "configuration": "Release"},
-    { "name": "gcc-coverage",   "configurePreset": "linux-gcc-coverage",  "configuration": "Debug"},
-    { "name": "msvc-debug",     "configurePreset": "windows-msvc",        "configuration": "Debug" },
-    { "name": "msvc-release",   "configurePreset": "windows-msvc",        "configuration": "Release" }
+    { "name": "gcc-debug",      "configurePreset": "gcc-debug",     "configuration": "Debug"},
+    { "name": "gcc-release",    "configurePreset": "gcc-release",   "configuration": "Release"},
+    { "name": "clang-asan",     "configurePreset": "clang-asan",    "configuration": "Debug"},
+    { "name": "clang-release",  "configurePreset": "clang-release", "configuration": "Release"},
+    { "name": "gcc-coverage",   "configurePreset": "gcc-coverage",  "configuration": "Debug"},
+    { "name": "msvc-debug",     "configurePreset": "msvc",  "configuration": "Debug" },
+    { "name": "msvc-release",   "configurePreset": "msvc",  "configuration": "Release" }
   ],
 
   "testPresets": [
     {
       "name": "test-gcc-debug",
-      "configurePreset": "linux-gcc-debug",
+      "configurePreset": "gcc-debug",
       "output": { "outputOnFailure": true },
       "execution": { "noTestsAction": "ignore" }
     },
     {
       "name": "test-gcc-release",
-      "configurePreset": "linux-gcc-release",
+      "configurePreset": "gcc-release",
       "output": { "outputOnFailure": true },
       "execution": { "noTestsAction": "ignore" }
     },
     {
       "name": "test-clang-asan",
-      "configurePreset": "linux-clang-asan",
+      "configurePreset": "clang-asan",
       "output": { "outputOnFailure": true },
       "execution": { "noTestsAction": "ignore" },
       "environment": { "ASAN_OPTIONS": "detect_leaks=1" }
     },
     {
       "name": "test-msvc-debug",
-      "configurePreset": "windows-msvc",
+      "configurePreset": "msvc",
       "configuration": "Debug",
       "output": { "outputOnFailure": true },
       "execution": { "noTestsAction": "ignore" }
