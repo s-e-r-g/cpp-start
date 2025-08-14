@@ -64,7 +64,7 @@ include(FetchContent)
 FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG        v1.15.2
+  GIT_TAG        v1.17.0
 )
 # For MSVC: avoid overriding parent settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -84,7 +84,7 @@ if(BUILD_BENCHMARKS)
   FetchContent_Declare(
     googlebenchmark
     GIT_REPOSITORY https://github.com/google/benchmark.git
-    GIT_TAG        v1.8.5
+    GIT_TAG        v1.9.4
   )
   # Benchmark needs GoogleTest for its own tests off and pthreads
   set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
