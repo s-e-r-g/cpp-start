@@ -96,11 +96,11 @@
   ],
 
   "buildPresets": [
-    { "name": "gcc-debug",      "configurePreset": "linux-gcc-debug",     "configuration": "Debug",   "jobs": 8 },
-    { "name": "gcc-release",    "configurePreset": "linux-gcc-release",   "configuration": "Release", "jobs": 8 },
-    { "name": "clang-asan",     "configurePreset": "linux-clang-asan",    "configuration": "Debug",   "jobs": 8 },
-    { "name": "clang-release",  "configurePreset": "linux-clang-release", "configuration": "Release", "jobs": 8 },
-    { "name": "gcc-coverage",   "configurePreset": "linux-gcc-coverage",  "configuration": "Debug",   "jobs": 8 },
+    { "name": "gcc-debug",      "configurePreset": "linux-gcc-debug",     "configuration": "Debug"},
+    { "name": "gcc-release",    "configurePreset": "linux-gcc-release",   "configuration": "Release"},
+    { "name": "clang-asan",     "configurePreset": "linux-clang-asan",    "configuration": "Debug"},
+    { "name": "clang-release",  "configurePreset": "linux-clang-release", "configuration": "Release"},
+    { "name": "gcc-coverage",   "configurePreset": "linux-gcc-coverage",  "configuration": "Debug"},
     { "name": "msvc-debug",     "configurePreset": "windows-msvc",        "configuration": "Debug" },
     { "name": "msvc-release",   "configurePreset": "windows-msvc",        "configuration": "Release" }
   ],
