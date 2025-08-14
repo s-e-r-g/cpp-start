@@ -23,10 +23,10 @@ A modern CMake starter that builds:
 
 ```bash
 # Configure (Debug GCC)
-cmake --preset linux-gcc-debug
+cmake --preset gcc-debug
 
 # Build
-cmake --build --preset linux-gcc-debug -j
+cmake --build --preset gcc-debug -j
 
 # Run the app
 ./build/linux-gcc-debug/app
@@ -104,7 +104,7 @@ Permissions:
 # Temporary (current boot)
 echo 0 | sudo tee /proc/sys/kernel/perf_event_paranoid
 # or run as root
-sudo ./build/linux-gcc-release/app
+sudo ./build/gcc-release/app
 ```
 
 If unavailable, the app still runs and prints wall time.
@@ -113,7 +113,7 @@ If unavailable, the app still runs and prints wall time.
 
 ## Sanitizers
 
-Enable with the `linux-clang-asan` preset, or flags:
+Enable with the `clang-asan` preset, or flags:
 
 ```
 -fsanitize=address,undefined -fno-omit-frame-pointer
@@ -130,19 +130,11 @@ export ASAN_OPTIONS=detect_leaks=1:halt_on_error=1
 ## Coverage (GCC)
 
 ```bash
-cmake --preset linux-gcc-coverage
-cmake --build --preset linux-gcc-coverage -j
+cmake --preset gcc-coverage
+cmake --build --preset gcc-coverage -j
 ctest --preset test-gcc-debug --output-on-failure
 # Post-process with gcovr or lcov+genhtml (not included).
 ```
-
----
-
-## Tips
-
-- `CMAKE_EXPORT_COMPILE_COMMANDS=ON` — `compile_commands.json` per preset build dir.
-- Install prefix is per preset: `cmake --install --preset linux-gcc-release` installs into that preset’s `install/`.
-- Prefer `RelWithDebInfo` for profiling.
 
 ---
 ## License
