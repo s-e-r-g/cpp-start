@@ -82,10 +82,22 @@
       }
     },
     {
-      "name": "msvc",
-      "displayName": "Windows MSVC (x64) Multi-Config",
+      "name": "msvc-debug",
+      "displayName": "Windows MSVC (x64) Debug",
       "generator": "Visual Studio 17 2022",
-      "binaryDir": "${sourceDir}/build/msvc",
+      "binaryDir": "${sourceDir}/build/msvc-debug",
+      "architecture": { "value": "x64", "strategy": "external" },
+      "cacheVariables": {
+        "BUILD_TESTING": "ON",
+        "BUILD_BENCHMARKS": "ON",
+        "ENABLE_LINUX_PERF": "OFF"
+      }
+    },
+    {
+      "name": "msvc-release",
+      "displayName": "Windows MSVC (x64) Release",
+      "generator": "Visual Studio 17 2022",
+      "binaryDir": "${sourceDir}/build/msvc-release",
       "architecture": { "value": "x64", "strategy": "external" },
       "cacheVariables": {
         "BUILD_TESTING": "ON",
@@ -101,8 +113,8 @@
     { "name": "clang-asan",     "configurePreset": "clang-asan",    "configuration": "Debug"},
     { "name": "clang-release",  "configurePreset": "clang-release", "configuration": "Release"},
     { "name": "gcc-coverage",   "configurePreset": "gcc-coverage",  "configuration": "Debug"},
-    { "name": "msvc-debug",     "configurePreset": "msvc",  "configuration": "Debug" },
-    { "name": "msvc-release",   "configurePreset": "msvc",  "configuration": "Release" }
+    { "name": "msvc-debug",     "configurePreset": "msvc-debug",  "configuration": "Debug" },
+    { "name": "msvc-release",   "configurePreset": "msvc-release",  "configuration": "Release" }
   ],
 
   "testPresets": [
@@ -127,10 +139,17 @@
     },
     {
       "name": "test-msvc-debug",
-      "configurePreset": "msvc",
+      "configurePreset": "msvc-debug",
       "configuration": "Debug",
       "output": { "outputOnFailure": true },
       "execution": { "noTestsAction": "ignore" }
-    }
+    },
+    {
+      "name": "test-msvc-release",
+      "configurePreset": "msvc-release",
+      "configuration": "Release",
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "ignore" }
+    }    
   ]
 }
