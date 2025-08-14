@@ -1,0 +1,10 @@
+build/
+*.o
+*.obj
+*.pdb
+*.ilk
+*.vcxproj*
+CMakeCache.txt
+CMakeFiles/
+Testing/
+compile_commands.json
