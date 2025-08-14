@@ -6,10 +6,6 @@ A modern CMake starter that builds:
 - **`app`** — demo binary; prints wall time and (on Linux) optional CPU perf counters via `perf_event_open`.
 - **Unit tests** — GoogleTest (fetched via CMake).
 - **Benchmarks** — Google Benchmark (fetched via CMake).
-- **CMakePresets** — per-preset, out-of-source builds.
-
-Repo layout (short): `CMakeLists.txt`, `CMakePresets.json`, `include/mylib`, `src/`, `tests/`, `benchmarks/`.
-
 ---
 
 ## Requirements
