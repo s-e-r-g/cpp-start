@@ -2,13 +2,13 @@ name: CI (CMake • GCC/Clang/MSVC)
 
 on:
   push:
-    branches: [ "**" ]
+    branches: ["**"]
   pull_request:
-    branches: [ "**" ]
+    branches: ["**"]
 
 jobs:
   build:
-    name: ${{ matrix.os }} • ${{ matrix.compiler }} • Release
+    name: ${{ matrix.os }} • ${{ matrix.compiler }} • ${{ matrix.build_type }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -19,23 +19,52 @@ jobs:
             compiler: gcc
             cc: gcc
             cxx: g++
+            build_type: Release
+          - os: ubuntu-latest
+            compiler: gcc
+            cc: gcc
+            cxx: g++
+            build_type: Debug
           - os: ubuntu-latest
             compiler: clang
             cc: clang
             cxx: clang++
-          # Windows
+            build_type: Release
+          - os: ubuntu-latest
+            compiler: clang
+            cc: clang
+            cxx: clang++
+            build_type: Debug
+
+          # Windows (MSVC with Ninja: single-config)
           - os: windows-latest
             compiler: msvc
+            build_type: Release
+          - os: windows-latest
+            compiler: msvc
+            build_type: Debug
+
+          # Windows (Clang-CL with Visual Studio generator: multi-config)
           - os: windows-latest
             compiler: clang-cl
-          # macOS
+            build_type: Release
+          - os: windows-latest
+            compiler: clang-cl
+            build_type: Debug
+
+          # macOS (Apple Silicon, Ninja: single-config)
           - os: macos-latest
             compiler: clang
             cc: clang
             cxx: clang++
+            build_type: Release
+          - os: macos-latest
+            compiler: clang
+            cc: clang
+            cxx: clang++
+            build_type: Debug
 
     env:
-      CMAKE_BUILD_TYPE: Release
       CTEST_OUTPUT_ON_FAILURE: 1
 
     steps:
@@ -44,48 +73,47 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install build tools (Ubuntu)
+      # ---------- Tooling ----------
+      - name: Install build deps (Ubuntu)
         if: startsWith(matrix.os, 'ubuntu')
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake ninja-build $([[ "${{ matrix.compiler }}" == "gcc" ]] && echo "gcc g++" || echo "clang")
 
-      - name: Install Ninja (macOS)
-        if: startsWith(matrix.os, 'macos')
-        run: |
-          brew install ninja || true
 
-      - name: Enable MSVC env (Windows)
+      - name: Enable MSVC environment (Windows)
         if: startsWith(matrix.os, 'windows')
         uses: ilammy/msvc-dev-cmd@v1
 
+      # ---------- Configure ----------
       - name: Configure
         shell: bash
         run: |
-          # Avoid leaking a toolset/generator from the environment
+          # Avoid leaking generator/toolset from the environment
           unset CMAKE_GENERATOR_TOOLSET || true
           unset CMAKE_GENERATOR || true
 
           if [[ "${{ matrix.os }}" == "windows-latest" && "${{ matrix.compiler }}" == "clang-cl" ]]; then
-            # Visual Studio generator is required for -T ClangCL
+            # Visual Studio generator (supports -T ClangCL); do NOT pass CMAKE_BUILD_TYPE here
             cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -T ClangCL
           else
+            # Ninja generator everywhere else (single-config): set CMAKE_BUILD_TYPE from matrix
             if [[ -n "${{ matrix.cc }}" ]]; then export CC=${{ matrix.cc }}; fi
             if [[ -n "${{ matrix.cxx }}" ]]; then export CXX=${{ matrix.cxx }}; fi
-            cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
+            cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE="${{ matrix.build_type }}"
           fi
 
+      # ---------- Build ----------
       - name: Build
         shell: bash
         run: |
-          if [[ "${{ matrix.os }}" == "windows-latest" && "${{ matrix.compiler }}" == "clang-cl" ]]; then
-            # No extra MSBuild args — avoid duplicate 'v:m'
-            cmake --build build --config "${CMAKE_BUILD_TYPE}" --parallel
-          else
-            cmake --build build --config "${CMAKE_BUILD_TYPE}" -- -v
-          fi
+          # Always pass --config (ignored by Ninja, required by VS)
+          cmake --build build --config "${{ matrix.build_type }}" --parallel ${VERBOSE:+--} ${VERBOSE:+-v}
 
+      # ---------- Test ----------
       - name: Test
         shell: bash
         working-directory: build
-        run: ctest -C "${CMAKE_BUILD_TYPE}" --output-on-failure
+        run: |
+          # -C config is required for multi-config (VS); harmless for Ninja
+          ctest -C "${{ matrix.build_type }}" --output-on-failure
