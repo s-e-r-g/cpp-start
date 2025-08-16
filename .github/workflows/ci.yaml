@@ -1,0 +1,104 @@
+name: CI (CMake • GCC/Clang/MSVC)
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  build:
+    name: ${{ matrix.os }} • ${{ matrix.compiler }} • Release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux
+          - os: ubuntu-latest
+            compiler: gcc
+            cc: gcc
+            cxx: g++
+          - os: ubuntu-latest
+            compiler: clang
+            cc: clang
+            cxx: clang++
+          # Windows
+          - os: windows-latest
+            compiler: msvc
+            cc: ""
+            cxx: ""
+          - os: windows-latest
+            compiler: clang-cl
+            cc: clang-cl
+            cxx: clang-cl
+          # macOS
+          - os: macos-latest
+            compiler: clang
+            cc: clang
+            cxx: clang++
+
+    env:
+      CMAKE_BUILD_TYPE: Release
+      # If your project has tests, ctest will pick them up.
+      CTEST_OUTPUT_ON_FAILURE: 1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # ---- Platform tool setup ------------------------------------------------
+
+      - name: Install build tools (Ubuntu)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build $([[ "${{ matrix.compiler }}" == "gcc" ]] && echo "gcc g++" || echo "clang clang-tidy")
+      
+      - name: Install Ninja (macOS)
+        if: startsWith(matrix.os, 'macos')
+        run: |
+          brew update
+          brew install ninja || true
+
+      - name: Enable MSVC environment (Windows)
+        if: startsWith(matrix.os, 'windows')
+        uses: ilammy/msvc-dev-cmd@v1
+
+      # Ninja is preinstalled on Windows runners, but ensure it's on PATH
+      - name: Verify Ninja (Windows)
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          ninja --version
+
+      # ---- Configure & Build --------------------------------------------------
+
+      - name: Configure (CMake + Ninja)
+        shell: bash
+        run: |
+          # Select compilers where specified by matrix
+          if [[ -n "${{ matrix.cc }}" ]]; then
+            export CC=${{ matrix.cc }}
+            export CXX=${{ matrix.cxx }}
+          fi
+
+          # On Windows with clang-cl, use the ClangCL toolset for MSVC headers/libs.
+          GEN_OPTS=()
+          if [[ "${{ matrix.os }}" == "windows-latest" && "${{ matrix.compiler }}" == "clang-cl" ]]; then
+            GEN_OPTS+=(-T ClangCL)
+          fi
+
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
+            "${GEN_OPTS[@]}"
+
+      - name: Build
+        shell: bash
+        run: cmake --build build --config "${CMAKE_BUILD_TYPE}" -- -v
+
+      - name: Test (ctest)
+        shell: bash
+        working-directory: build
+        run: ctest -C "${CMAKE_BUILD_TYPE}" --output-on-failure
