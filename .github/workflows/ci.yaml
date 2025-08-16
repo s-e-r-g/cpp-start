@@ -26,12 +26,8 @@ jobs:
           # Windows
           - os: windows-latest
             compiler: msvc
-            cc: ""
-            cxx: ""
           - os: windows-latest
             compiler: clang-cl
-            cc: clang-cl
-            cxx: clang-cl
           # macOS
           - os: macos-latest
             compiler: clang
@@ -40,7 +36,6 @@ jobs:
 
     env:
       CMAKE_BUILD_TYPE: Release
-      # If your project has tests, ctest will pick them up.
       CTEST_OUTPUT_ON_FAILURE: 1
 
     steps:
@@ -49,56 +44,49 @@ jobs:
         with:
           submodules: recursive
 
-      # ---- Platform tool setup ------------------------------------------------
-
       - name: Install build tools (Ubuntu)
         if: startsWith(matrix.os, 'ubuntu')
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build $([[ "${{ matrix.compiler }}" == "gcc" ]] && echo "gcc g++" || echo "clang clang-tidy")
-      
+          sudo apt-get install -y cmake ninja-build $([[ "${{ matrix.compiler }}" == "gcc" ]] && echo "gcc g++" || echo "clang")
+
       - name: Install Ninja (macOS)
         if: startsWith(matrix.os, 'macos')
         run: |
           brew update
           brew install ninja || true
 
-      - name: Enable MSVC environment (Windows)
+      - name: Enable MSVC env (Windows)
         if: startsWith(matrix.os, 'windows')
         uses: ilammy/msvc-dev-cmd@v1
 
-      # Ninja is preinstalled on Windows runners, but ensure it's on PATH
-      - name: Verify Ninja (Windows)
-        if: startsWith(matrix.os, 'windows')
-        run: |
-          ninja --version
-
-      # ---- Configure & Build --------------------------------------------------
-
-      - name: Configure (CMake + Ninja)
+      - name: Configure
         shell: bash
         run: |
-          # Select compilers where specified by matrix
-          if [[ -n "${{ matrix.cc }}" ]]; then
-            export CC=${{ matrix.cc }}
-            export CXX=${{ matrix.cxx }}
-          fi
+          # Avoid leaking a toolset/generator from the environment
+          unset CMAKE_GENERATOR_TOOLSET || true
+          unset CMAKE_GENERATOR || true
 
-          # On Windows with clang-cl, use the ClangCL toolset for MSVC headers/libs.
-          GEN_OPTS=()
           if [[ "${{ matrix.os }}" == "windows-latest" && "${{ matrix.compiler }}" == "clang-cl" ]]; then
-            GEN_OPTS+=(-T ClangCL)
+            # Visual Studio generator is required for -T ClangCL
+            cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -T ClangCL
+          else
+            if [[ -n "${{ matrix.cc }}" ]]; then export CC=${{ matrix.cc }}; fi
+            if [[ -n "${{ matrix.cxx }}" ]]; then export CXX=${{ matrix.cxx }}; fi
+            cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
           fi
-
-          cmake -S . -B build -G Ninja \
-            -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
-            "${GEN_OPTS[@]}"
 
       - name: Build
         shell: bash
-        run: cmake --build build --config "${CMAKE_BUILD_TYPE}" -- -v
+        run: |
+          if [[ "${{ matrix.os }}" == "windows-latest" && "${{ matrix.compiler }}" == "clang-cl" ]]; then
+            # No extra MSBuild args — avoid duplicate 'v:m'
+            cmake --build build --config "${CMAKE_BUILD_TYPE}" --parallel
+          else
+            cmake --build build --config "${CMAKE_BUILD_TYPE}" -- -v
+          fi
 
-      - name: Test (ctest)
+      - name: Test
         shell: bash
         working-directory: build
         run: ctest -C "${CMAKE_BUILD_TYPE}" --output-on-failure
