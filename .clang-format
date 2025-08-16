@@ -1,0 +1,20 @@
+BasedOnStyle: WebKit
+
+# Keep 4-space indents (WebKit default)
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# Reasonable line length for modern codebases
+ColumnLimit: 120
+
+# Keep includes sorted and regrouped
+SortIncludes: true
+IncludeBlocks: Regroup
+
+Cpp11BracedListStyle: true
+BinPackArguments: false
+BinPackParameters: false
+AllowAllArgumentsOnNextLine: false
+
+
