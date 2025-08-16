@@ -1,11 +1,11 @@
 #pragma once
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
-#include <optional>
 
 struct PerfCounterSpec {
-    std::string name;   // e.g. "cycles", "instructions"
+    std::string name; // e.g. "cycles", "instructions"
     std::uint32_t type; // PERF_TYPE_* (Linux) or 0 on non-Linux
     std::uint64_t config; // PERF_COUNT_* (Linux) or 0 on non-Linux
 };

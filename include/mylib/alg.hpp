@@ -1,6 +1,6 @@
 #pragma once
-#include <span>
 #include <cstdint>
+#include <span>
 
 namespace mylib {
 

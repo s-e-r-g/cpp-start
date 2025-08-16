@@ -15,6 +15,5 @@ IncludeBlocks: Regroup
 Cpp11BracedListStyle: true
 BinPackArguments: false
 BinPackParameters: false
-AllowAllArgumentsOnNextLine: false
 
-
+AlignArrayOfStructures: Left
