@@ -138,5 +138,11 @@ ctest --preset test-gcc-debug --output-on-failure
 ```
 
 ---
+## TODO:
+- Add clang-tidy
+- Add devcontainer
+
+
+---
 ## License
 MIT
