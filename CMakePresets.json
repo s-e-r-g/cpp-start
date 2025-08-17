@@ -65,6 +65,20 @@
       }
     },
     {
+      "name": "clang-debug",
+      "displayName": "Clang Debug",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/clang-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "BUILD_TESTING": "ON",
+        "BUILD_BENCHMARKS": "ON",
+        "ENABLE_LINUX_PERF": "ON"
+      }
+    },    
+    {
       "name": "gcc-coverage",
       "displayName": "GCC Coverage (Debug + gcov)",
       "generator": "Ninja",
@@ -108,13 +122,14 @@
   ],
 
   "buildPresets": [
-    { "name": "gcc-debug",      "configurePreset": "gcc-debug",     "configuration": "Debug"},
-    { "name": "gcc-release",    "configurePreset": "gcc-release",   "configuration": "Release"},
-    { "name": "clang-asan",     "configurePreset": "clang-asan",    "configuration": "Debug"},
-    { "name": "clang-release",  "configurePreset": "clang-release", "configuration": "Release"},
-    { "name": "gcc-coverage",   "configurePreset": "gcc-coverage",  "configuration": "Debug"},
-    { "name": "msvc-debug",     "configurePreset": "msvc-debug",  "configuration": "Debug" },
-    { "name": "msvc-release",   "configurePreset": "msvc-release",  "configuration": "Release" }
+    { "name": "gcc-debug",     "configurePreset": "gcc-debug",     "configuration": "Debug"},
+    { "name": "gcc-release",   "configurePreset": "gcc-release",   "configuration": "Release"},
+    { "name": "gcc-coverage",  "configurePreset": "gcc-coverage",  "configuration": "Debug"},
+    { "name": "clang-asan",    "configurePreset": "clang-asan",    "configuration": "Debug"},
+    { "name": "clang-release", "configurePreset": "clang-release", "configuration": "Release"},
+    { "name": "clang-debug",   "configurePreset": "clang-debug",   "configuration": "Debug"},
+    { "name": "msvc-debug",    "configurePreset": "msvc-debug",    "configuration": "Debug" },
+    { "name": "msvc-release",  "configurePreset": "msvc-release",  "configuration": "Release" }
   ],
 
   "testPresets": [
@@ -137,6 +152,18 @@
       "execution": { "noTestsAction": "ignore" },
       "environment": { "ASAN_OPTIONS": "detect_leaks=1" }
     },
+    {
+      "name": "test-clang-debug",
+      "configurePreset": "clang-debug",
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "ignore" }
+    },
+    {
+      "name": "test-clang-release",
+      "configurePreset": "clang-release",
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "ignore" }
+    },    
     {
       "name": "test-msvc-debug",
       "configurePreset": "msvc-debug",
