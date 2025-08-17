@@ -21,6 +21,8 @@ A modern CMake starter that builds:
 
 ### Using CMake Presets (recommended)
 
+Each preset keeps **all** CMake files (Cache, CMakeFiles, compile_commands.json, binaries) isolated under its own directory.
+
 ```bash
 # Configure (Debug GCC)
 cmake --preset gcc-debug
@@ -45,7 +47,7 @@ cmake --preset gcc-release
 cmake --build --preset gcc-release
 ```
 
-### ASan/UBSan (Clang)
+### ASan (Clang)
 
 ```bash
 cmake --preset clang-asan
@@ -56,7 +58,7 @@ ASAN_OPTIONS=detect_leaks=1 ./build/clang-asan/app
 ### Windows (MSVC)
 
 ```powershell
-cmake --preset msvc
+cmake --preset msvc-debug
 cmake --build --preset msvc-debug
 ctest --preset test-msvc-debug --output-on-failure
 ```
@@ -79,7 +81,6 @@ ctest --test-dir build --output-on-failure
 ./build/alg_bench
 ```
 
-Each preset keeps **all** CMake files (Cache, CMakeFiles, compile_commands.json, binaries) isolated under its own directory.
 
 ---
 
